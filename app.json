@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Pesimios Argensirios",
+    "slug": "pesimios-argensirios",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "pesimiosargensirios",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#12151C",
+    "android": {
+      "package": "com.pesimios.argensirios",
+      "adaptiveIcon": {
+        "backgroundColor": "#12151C",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "ios": {
+      "bundleIdentifier": "com.pesimios.argensirios",
+      "supportsTablet": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#12151C"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#12151C",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 220
+        }
+      ],
+      "expo-sharing"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dc42f9ce-4bae-4a19-9506-9f41b2794446"
+      }
+    }
+  }
+}
