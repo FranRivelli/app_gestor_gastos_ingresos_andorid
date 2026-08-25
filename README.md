@@ -13,9 +13,14 @@ para estado, `react-native-gifted-charts` para gráficos, `date-fns` para fechas
 - **Fase 2 (lista):** registro, login, sesión persistida, rutas protegidas
   (`Stack.Protected` de expo-router), recuperar contraseña, cerrar sesión,
   errores traducidos al español.
-- Fase 3 en adelante: navegación con tabs, pantallas de Cargar/Movimientos/
-  Presupuesto/Ajustes — todavía no están. La pantalla que hoy se ve al iniciar
-  sesión es un placeholder temporal (`src/app/(app)/index.tsx`).
+- **Fase 3 (lista):** bottom tabs (Inicio, Cargar, Movimientos, Presupuesto) +
+  ícono de Ajustes en el header; pantalla Cargar completa (con foco automático,
+  categorías filtradas por tipo, confirmación y vibración al guardar); pantalla
+  Movimientos completa (agrupada por fecha, filtros por mes/tipo/categoría,
+  total filtrado, deslizar para borrar, tocar para editar, pull to refresh).
+- Fase 4 en adelante: dashboard con métricas y gráficos, presupuesto por
+  categoría, ABM de categorías y exportar CSV — todavía no están. Inicio y
+  Presupuesto hoy son placeholders temporales.
 
 ## Requisitos previos
 

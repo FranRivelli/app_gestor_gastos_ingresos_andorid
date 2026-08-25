@@ -36,3 +36,22 @@ export function traducirErrorAuth(error: unknown): string {
 
   return 'Ocurrió un error. Intentá de nuevo en unos minutos.';
 }
+
+export function traducirErrorDatos(error: unknown): string {
+  const mensaje = error instanceof Error ? error.message : String(error);
+
+  if (/network request failed|fetch failed|failed to fetch/i.test(mensaje)) {
+    return 'Sin conexión a internet. No se guardaron los cambios, intentá de nuevo.';
+  }
+  if (/violates check constraint|check_violation/i.test(mensaje)) {
+    return 'Los datos ingresados no son válidos.';
+  }
+  if (/violates foreign key constraint/i.test(mensaje)) {
+    return 'No se pudo completar la operación: hay datos relacionados inválidos.';
+  }
+  if (/row-level security/i.test(mensaje)) {
+    return 'No tenés permiso para hacer esta operación.';
+  }
+
+  return 'Ocurrió un error al guardar. Intentá de nuevo.';
+}

@@ -4,12 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/ui/Banner';
 import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/contexts/AuthContext';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Placeholder temporal: la Fase 3 reemplaza esta pantalla por los tabs
-// (Inicio, Cargar, Movimientos, Presupuesto) y mueve "Cerrar sesión" a Ajustes.
-export default function InicioPlaceholder() {
+// Placeholder temporal: la Fase 5 agrega ABM de categorías y exportar CSV.
+export default function AjustesScreen() {
   const { session, signOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,10 +25,12 @@ export default function InicioPlaceholder() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.content}>
-        <Text style={styles.title}>Sesión iniciada</Text>
         <Text style={styles.email}>{session?.user.email}</Text>
+        <Text style={styles.subtitle}>
+          La administración de categorías y la exportación a CSV llegan en una próxima fase.
+        </Text>
         {error ? <Banner message={error} /> : null}
         <Button title="Cerrar sesión" variant="secondary" onPress={handleSignOut} loading={loading} />
       </View>
@@ -44,19 +45,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
+    padding: Spacing.xl,
     gap: Spacing.md,
   },
-  title: {
+  email: {
     color: Colors.text,
-    fontSize: FontSize.xl,
+    fontSize: FontSize.lg,
     fontWeight: '700',
   },
-  email: {
+  subtitle: {
     color: Colors.textSecondary,
-    fontSize: FontSize.md,
-    marginBottom: Spacing.md,
+    fontSize: FontSize.sm,
+    marginBottom: Spacing.lg,
   },
 });
