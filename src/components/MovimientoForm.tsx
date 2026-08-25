@@ -3,7 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState, type RefObject } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -72,27 +72,6 @@ export function MovimientoForm({
   const [error, setError] = useState<string | null>(null);
   const [confirmacion, setConfirmacion] = useState(false);
   const montoRef = useRef<TextInput>(null);
-  const descripcionRef = useRef<TextInput>(null);
-  const scrollRef = useRef<ScrollView>(null);
-
-  function scrollCampoAVista(inputRef: RefObject<TextInput | null>) {
-    // KeyboardAvoidingView achica el área visible, pero no hace scroll al
-    // campo enfocado por su cuenta. Se mide su posición relativa al
-    // contenido del ScrollView y se scrollea ahí, con margen para que no
-    // quede pegado arriba del teclado.
-    requestAnimationFrame(() => {
-      const scrollNode = scrollRef.current?.getInnerViewNode();
-      const input = inputRef.current;
-      if (!scrollNode || !input) return;
-      input.measureLayout(
-        scrollNode,
-        (_x: number, y: number) => {
-          scrollRef.current?.scrollTo({ y: Math.max(y - Spacing.lg, 0), animated: true });
-        },
-        () => {}
-      );
-    });
-  }
 
   useFocusEffect(
     useCallback(() => {
@@ -164,9 +143,9 @@ export function MovimientoForm({
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView
-        ref={scrollRef}
         contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets>
         {error ? <Banner message={error} /> : null}
         {confirmacion ? <Banner variant="success" message="Movimiento guardado." /> : null}
 
@@ -205,25 +184,22 @@ export function MovimientoForm({
               mode="date"
               display={Platform.OS === 'ios' ? 'inline' : 'default'}
               maximumDate={new Date()}
-              onChange={(_event, fechaSeleccionada) => {
-                setMostrarPicker(Platform.OS === 'ios');
-                if (fechaSeleccionada) {
-                  const anio = fechaSeleccionada.getFullYear();
-                  const mes = String(fechaSeleccionada.getMonth() + 1).padStart(2, '0');
-                  const dia = String(fechaSeleccionada.getDate()).padStart(2, '0');
-                  setFecha(`${anio}-${mes}-${dia}`);
-                }
+              onValueChange={(_event, fechaSeleccionada) => {
+                const anio = fechaSeleccionada.getFullYear();
+                const mes = String(fechaSeleccionada.getMonth() + 1).padStart(2, '0');
+                const dia = String(fechaSeleccionada.getDate()).padStart(2, '0');
+                setFecha(`${anio}-${mes}-${dia}`);
+                if (Platform.OS !== 'ios') setMostrarPicker(false);
               }}
+              onDismiss={() => setMostrarPicker(false)}
             />
           ) : null}
         </View>
 
         <TextField
-          ref={descripcionRef}
           label="Descripción (opcional)"
           value={descripcion}
           onChangeText={setDescripcion}
-          onFocus={() => scrollCampoAVista(descripcionRef)}
           placeholder="Ej: supermercado del sábado"
         />
 
