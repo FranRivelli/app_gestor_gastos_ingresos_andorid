@@ -64,6 +64,16 @@ categorías por defecto para cada usuario nuevo.
 No hace falta (ni se recomienda) correr esto con la CLI de Supabase contra el
 proyecto remoto — se corre a mano, una sola vez, desde el SQL Editor.
 
+### Verificar que RLS quedó bien configurado
+
+[supabase/tests/rls_check.sql](supabase/tests/rls_check.sql) es un script de
+solo lectura para correr en el mismo SQL Editor después de la migración.
+Devuelve una fila por tabla (`categorias`, `movimientos`, `presupuestos`) con
+si RLS está habilitado y si existen las cuatro políticas (SELECT/INSERT/
+UPDATE/DELETE); la columna `estado` dice `OK` o detalla qué falta. Es la forma
+recomendada de confirmar el aislamiento entre usuarios contra la base real, en
+vez de confiar solo en que el cliente filtre bien.
+
 ### ¿Por qué el sembrado de categorías es un trigger y no código del cliente?
 
 Ver el comentario en la sección 4 de `001_schema.sql`, resumen:
