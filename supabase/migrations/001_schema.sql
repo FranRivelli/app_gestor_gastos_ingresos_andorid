@@ -109,30 +109,34 @@ security definer
 set search_path = public
 as $$
 begin
+  -- Colores elegidos por distancia perceptual (CIELAB) entre las 23, no a
+  -- ojo: garantiza separación real de matiz/luminosidad incluso en escala de
+  -- grises. Ver supabase/migrations/002_colores.sql para el detalle de por
+  -- qué se reemplazó la paleta original (muy agrupada en un mismo tono).
   insert into public.categorias (user_id, nombre, tipo, naturaleza, color) values
-    (new.id, 'Alquiler/Vivienda',        'gasto',   'fijo',     '#E0725C'),
-    (new.id, 'Servicios',                'gasto',   'fijo',     '#E0885C'),
-    (new.id, 'Internet y telefonía',     'gasto',   'fijo',     '#E0A05C'),
-    (new.id, 'Salud',                    'gasto',   'fijo',     '#E0B85C'),
-    (new.id, 'Educación',                'gasto',   'fijo',     '#D6E05C'),
-    (new.id, 'Seguros',                  'gasto',   'fijo',     '#BEE05C'),
-    (new.id, 'Transporte',               'gasto',   'fijo',     '#A0E05C'),
-    (new.id, 'Suscripciones',            'gasto',   'fijo',     '#7EE05C'),
-    (new.id, 'Supermercado',             'gasto',   'variable', '#5CE070'),
-    (new.id, 'Comida fuera de casa',     'gasto',   'variable', '#5CE08A'),
-    (new.id, 'Delivery',                 'gasto',   'variable', '#5CE0A6'),
-    (new.id, 'Salidas y ocio',           'gasto',   'variable', '#5CE0C2'),
-    (new.id, 'Ropa',                     'gasto',   'variable', '#5CC8E0'),
-    (new.id, 'Regalos',                  'gasto',   'variable', '#5CA8E0'),
-    (new.id, 'Mascotas',                 'gasto',   'variable', '#5C8EE0'),
-    (new.id, 'Otros',                    'gasto',   'variable', '#5C72E0'),
-    (new.id, 'Ahorro',                   'gasto',   'fijo',     '#6E5CE0'),
-    (new.id, 'Inversiones',              'gasto',   'fijo',     '#8A5CE0'),
-    (new.id, 'Fondo de emergencia',      'gasto',   'fijo',     '#A65CE0'),
-    (new.id, 'Sueldo',                   'ingreso', 'fijo',     '#C25CE0'),
-    (new.id, 'Freelance',                'ingreso', 'variable', '#E05CC8'),
-    (new.id, 'Ventas',                   'ingreso', 'variable', '#E05CA8'),
-    (new.id, 'Otros ingresos',           'ingreso', 'variable', '#E05C8A');
+    (new.id, 'Alquiler/Vivienda',        'gasto',   'fijo',     '#D22D2D'),
+    (new.id, 'Servicios',                'gasto',   'fijo',     '#20DF20'),
+    (new.id, 'Internet y telefonía',     'gasto',   'fijo',     '#2020DF'),
+    (new.id, 'Salud',                    'gasto',   'fijo',     '#20B9DF'),
+    (new.id, 'Educación',                'gasto',   'fijo',     '#EDD882'),
+    (new.id, 'Seguros',                  'gasto',   'fijo',     '#E481DA'),
+    (new.id, 'Transporte',               'gasto',   'fijo',     '#32E2A7'),
+    (new.id, 'Suscripciones',            'gasto',   'fijo',     '#1C4F9C'),
+    (new.id, 'Supermercado',             'gasto',   'variable', '#815737'),
+    (new.id, 'Comida fuera de casa',     'gasto',   'variable', '#5C9720'),
+    (new.id, 'Delivery',                 'gasto',   'variable', '#D220DF'),
+    (new.id, 'Salidas y ocio',           'gasto',   'variable', '#DF8620'),
+    (new.id, 'Ropa',                     'gasto',   'variable', '#378166'),
+    (new.id, 'Regalos',                  'gasto',   'variable', '#AA185C'),
+    (new.id, 'Mascotas',                 'gasto',   'variable', '#DAA9B6'),
+    (new.id, 'Otros',                    'gasto',   'variable', '#BFDF20'),
+    (new.id, 'Ahorro',                   'gasto',   'fijo',     '#602097'),
+    (new.id, 'Inversiones',              'gasto',   'fijo',     '#94F0E3'),
+    (new.id, 'Fondo de emergencia',      'gasto',   'fijo',     '#3A6B88'),
+    (new.id, 'Sueldo',                   'ingreso', 'fijo',     '#E17770'),
+    (new.id, 'Freelance',                'ingreso', 'variable', '#978020'),
+    (new.id, 'Ventas',                   'ingreso', 'variable', '#9082ED'),
+    (new.id, 'Otros ingresos',           'ingreso', 'variable', '#94AFF0');
   return new;
 end;
 $$;
