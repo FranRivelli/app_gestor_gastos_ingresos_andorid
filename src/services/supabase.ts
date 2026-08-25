@@ -14,11 +14,17 @@ if (!supabaseUrl || !supabasePublishableKey) {
   );
 }
 
+// En el render estático de Expo Router para web (SSR en Node) no existe
+// `window`, y AsyncStorage lo necesita en esa plataforma. Se desactiva la
+// persistencia de sesión fuera de un entorno de navegador real; en
+// Android/iOS `window` siempre está definido, así que no los afecta.
+const enNavegador = typeof window !== 'undefined';
+
 export const supabase = createClient<Database>(supabaseUrl, supabasePublishableKey, {
   auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
+    storage: enNavegador ? AsyncStorage : undefined,
+    autoRefreshToken: enNavegador,
+    persistSession: enNavegador,
     detectSessionInUrl: false,
   },
 });

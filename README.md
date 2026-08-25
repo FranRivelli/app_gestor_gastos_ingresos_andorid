@@ -10,7 +10,12 @@ para estado, `react-native-gifted-charts` para gráficos, `date-fns` para fechas
 
 - **Fase 1 (lista):** proyecto Expo, tema oscuro, cliente de Supabase, tipos de
   la base, migración SQL con RLS y sembrado de categorías.
-- Fase 2 en adelante: autenticación, navegación, pantallas — todavía no están.
+- **Fase 2 (lista):** registro, login, sesión persistida, rutas protegidas
+  (`Stack.Protected` de expo-router), recuperar contraseña, cerrar sesión,
+  errores traducidos al español.
+- Fase 3 en adelante: navegación con tabs, pantallas de Cargar/Movimientos/
+  Presupuesto/Ajustes — todavía no están. La pantalla que hoy se ve al iniciar
+  sesión es un placeholder temporal (`src/app/(app)/index.tsx`).
 
 ## Requisitos previos
 
