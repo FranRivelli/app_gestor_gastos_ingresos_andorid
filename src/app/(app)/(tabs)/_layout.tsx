@@ -2,9 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
 
+import { MonthYearPicker } from '@/components/MonthYearPicker';
 import { Colors } from '@/constants/theme';
+import { DashboardPeriodProvider, useDashboardPeriod } from '@/contexts/DashboardPeriodContext';
 
-export default function TabsLayout() {
+function InicioHeaderTitle() {
+  const { anio, mes, setPeriodo } = useDashboardPeriod();
+  return <MonthYearPicker anio={anio} mes={mes} onChange={setPeriodo} />;
+}
+
+function TabsNavigator() {
   const router = useRouter();
 
   return (
@@ -27,6 +34,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Inicio',
+          headerTitle: () => <InicioHeaderTitle />,
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
         }}
       />
@@ -52,5 +60,13 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <DashboardPeriodProvider>
+      <TabsNavigator />
+    </DashboardPeriodProvider>
   );
 }

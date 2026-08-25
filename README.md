@@ -18,9 +18,12 @@ para estado, `react-native-gifted-charts` para gráficos, `date-fns` para fechas
   categorías filtradas por tipo, confirmación y vibración al guardar); pantalla
   Movimientos completa (agrupada por fecha, filtros por mes/tipo/categoría,
   total filtrado, deslizar para borrar, tocar para editar, pull to refresh).
-- Fase 4 en adelante: dashboard con métricas y gráficos, presupuesto por
-  categoría, ABM de categorías y exportar CSV — todavía no están. Inicio y
-  Presupuesto hoy son placeholders temporales.
+- **Fase 4 (lista):** dashboard de Inicio con selector de mes/año en el header,
+  4 tarjetas de métricas, torta de gastos por categoría con leyenda y
+  porcentajes, barras horizontales de top categorías, y barras de ingresos vs.
+  gastos de los últimos 6 meses.
+- Fase 5 en adelante: presupuesto por categoría, ABM de categorías y exportar
+  CSV — todavía no están. Presupuesto hoy es un placeholder temporal.
 
 ## Requisitos previos
 

@@ -44,6 +44,18 @@ export async function fetchMovimientos(filtros: FiltrosMovimientos): Promise<Mov
   return data as unknown as MovimientoConCategoria[];
 }
 
+export type MovimientoResumen = Pick<Movimiento, 'tipo' | 'monto' | 'fecha'>;
+
+export async function fetchMovimientosRango(desde: string, hasta: string): Promise<MovimientoResumen[]> {
+  const { data, error } = await supabase
+    .from('movimientos')
+    .select('tipo, monto, fecha')
+    .gte('fecha', desde)
+    .lte('fecha', hasta);
+  if (error) throw error;
+  return data;
+}
+
 export async function fetchMovimiento(id: string): Promise<Movimiento> {
   const { data, error } = await supabase.from('movimientos').select('*').eq('id', id).single();
   if (error) throw error;
