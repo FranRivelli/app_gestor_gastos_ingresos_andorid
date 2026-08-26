@@ -28,3 +28,10 @@ export const supabase = createClient<Database>(supabaseUrl, supabasePublishableK
     detectSessionInUrl: false,
   },
 });
+
+export async function getUserId(): Promise<string> {
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user.id;
+  if (!userId) throw new Error('No hay sesión activa.');
+  return userId;
+}

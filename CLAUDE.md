@@ -6,11 +6,12 @@ App de finanzas personales para 3 usuarios privados (vos, tu hermano, tu
 novia), cada uno con su cuenta y sus datos completamente aislados vía RLS de
 Supabase. Contexto completo del producto en [README.md](README.md).
 
-## Estado (actualizado a Fase 4)
+## Estado (actualizado a Fase 5)
 
-Fases 1 a 4 completas y committeadas. Ver detalle en la sección "Estado del
-proyecto" del README. Quedan Fase 5 (presupuesto, ABM de categorías, exportar
-CSV, Ajustes real) y pulido final.
+Las 5 fases del pedido original están completas y committeadas. Ver detalle
+en la sección "Estado del proyecto" del README. Lo que queda es pulido y
+verificación en dispositivo de las partes marcadas abajo como no probadas
+en este entorno.
 
 Cada fase se cerró con: `npx tsc --noEmit` limpio, prueba end-to-end contra el
 Supabase real del usuario (vía navegador, sin dispositivo físico disponible en
@@ -105,37 +106,114 @@ este entorno), y commit propio.
   builds. No reemplazar por `Intl.NumberFormat` sin verificar antes en un
   build real (no en el navegador, que sí tiene ICU completo).
 
+### Correcciones entre Fase 4 y Fase 5
+
+- **Paleta de colores de categorías rediseñada.** La original armaba los 23
+  colores recorriendo el círculo de matices con paso fijo y la misma
+  saturación/luminosidad para todos — con 23 categorías eso deja grupos
+  casi idénticos (se reportaron 3 verdes y 3 violetas indistinguibles). La
+  nueva paleta (`src/constants/categoriaColores.ts`, mismos valores en
+  `supabase/migrations/002_colores.sql`) se generó maximizando distancia
+  perceptual CIELAB con un piso mínimo de separación en luminosidad (L\*),
+  para que no colapsen ni en escala de grises. Con 23 colores no es
+  matemáticamente posible una separación grande en L\* para todos los pares
+  sin sacar colores del rango que se ve bien en fondo oscuro, pero sí se
+  garantiza que ninguno comparte matiz y luminosidad a la vez. Si se agregan
+  categorías default nuevas, generar el color con el mismo método (ver el
+  script usado, no está commiteado — era de un solo uso) en vez de elegir a
+  ojo.
+- **`measureLayout` no funciona bajo la New Architecture (Fabric).** Un
+  primer intento de auto-scroll al campo enfocado en `MovimientoForm.tsx`
+  usaba `scrollNode.measureLayout()`, que tira
+  `"ref.measureLayout must be called with a ref to a native component"` en
+  esta versión de RN (Fabric por defecto). Se sacó esa lógica; ahora depende
+  solo de `KeyboardAvoidingView` (`behavior: 'height'` en Android, `'padding'`
+  en iOS) + `automaticallyAdjustKeyboardInsets` en el `ScrollView` (esto
+  último es prop de `ScrollViewPropsIOS`, **no hace nada en Android** — ojo
+  si se busca una prop "cross-platform" para esto, no existe una directa).
+  Confirmado en dispositivo: alcanza, no hizo falta
+  `react-native-keyboard-controller`.
+- `@react-native-community/datetimepicker`: `onChange` está deprecado en esta
+  versión del paquete. Usar `onValueChange` (se dispara al elegir fecha) +
+  `onDismiss` (se dispara al cancelar/cerrar sin elegir), no `onChange`.
+
+### Fase 5 — presupuesto y ajustes
+
+- **`getUserId()` se movió a `src/services/supabase.ts`** (exportado) porque
+  ya lo necesitaban tres servicios (`movimientos`, `categorias`,
+  `presupuestos`). Antes vivía duplicado dentro de `movimientos.ts`.
+- **Borrar una categoría con movimientos asociados falla por el FK
+  `on delete restrict`** de la migración 001 (código Postgres `23503`,
+  foreign_key_violation). `eliminarCategoria` en `categorias.ts` distingue
+  ese caso lanzando `CategoriaConMovimientosError`, y la UI
+  (`CategoriaFormModal`) lo atrapa para ofrecer desactivar en su lugar en vez
+  de mostrar un error genérico. No hace falta un chequeo previo — dejar que
+  Postgres lo rechace y reaccionar al error es más simple y no tiene
+  condición de carrera.
+- **ABM de categorías: `tipo` no es editable, solo en la creación.** Así lo
+  pedía el enunciado ("ABM de categorías propias: nombre, color,
+  naturaleza") — cambiar el tipo de una categoría existente podría romper
+  el sentido de movimientos ya cargados con ese tipo. `CategoriaFormModal`
+  muestra el tipo como texto fijo en modo edición y como selector solo al
+  crear.
+- **Exportar CSV usa la API nueva de `expo-file-system`** (`File`, `Paths`,
+  no la vieja `FileSystem.writeAsStringAsync`/`cacheDirectory`) — esta
+  versión del paquete la tiene deprecada. Ver `src/services/exportarCsv.ts`.
+- **`upsertPresupuesto` depende del `unique(user_id, categoria_id, anio,
+  mes)`** de la tabla `presupuestos` (migración 001) vía
+  `onConflict: 'user_id,categoria_id,anio,mes'`. Si ese constraint cambia de
+  nombre o columnas, este `onConflict` string hay que actualizarlo a mano
+  (Supabase no lo valida en tipos).
+
 ## Cosas que no se pudieron probar en este entorno
 
 Sin dispositivo físico ni emulador, todo se probó vía `npx expo start` +
-navegador. Dos cosas específicas de gestos/nativo no se pudieron verificar
-ahí y conviene confirmarlas en el dispositivo real:
+navegador. Lo siguiente no se pudo verificar ahí y conviene confirmarlo en
+el dispositivo real (algunas cosas ya se confirmaron manualmente, ver abajo):
 
 - **Swipe-to-delete en Movimientos** (`react-native-gesture-handler`
   `Swipeable`): el navegador no compone gestos de arrastre reales en este
-  entorno.
-- **`@react-native-community/datetimepicker`** en el formulario de
-  Cargar/Editar: no tiene versión web (se degrada a `null` con un
-  `console.warn`), así que el flujo de cambiar la fecha nunca se ejecutó acá.
+  entorno. Todavía sin confirmar en dispositivo.
+- **`@react-native-community/datetimepicker`**: no tiene versión web (se
+  degrada a `null` con `console.warn`). *Ya confirmado en dispositivo* que
+  abre y cierra bien con la API nueva (`onValueChange`/`onDismiss`).
+- **`Alert.alert` es un no-op en `react-native-web`** (confirmado leyendo
+  `node_modules/react-native-web/dist/exports/Alert/index.js`: el método
+  está vacío). Todo lo que depende de una confirmación por `Alert` —
+  eliminar movimiento, eliminar categoría (y su fallback a "desactivar" por
+  FK violation), copiar presupuesto del mes anterior — no se pudo probar acá
+  porque el diálogo nunca aparece ni dispara los callbacks. Se verificó por
+  lectura de código en vez de en vivo.
+- **`expo-file-system`'s `File`/`Paths` (API nueva) no tienen implementación
+  real en web** — son clases stub vacías (`ExpoFileSystem.web.d.ts`). Al
+  exportar CSV en el navegador tira `"this.validatePath is not a function"`
+  apenas se instancia `new File(...)`. La query a Supabase y el armado del
+  CSV sí corren antes de eso (se confirmó que llegan bien), pero la
+  escritura a disco y el share nunca se probaron en vivo.
 
 Además: el `Modal` de React Native con `animationType="slide"` (usado en
-`SelectField`) queda visualmente trabado fuera de pantalla en el navegador de
-este entorno (la animación no corre si la pestaña no está "compositando"
-frames). Para probar interacciones dentro de ese modal hubo que cambiar
-`animationType` a `"none"` temporalmente y revertirlo después — no es un bug
-de la app, es una limitación del entorno de pruebas.
+`SelectField` y `CategoriaFormModal`) queda visualmente trabado fuera de
+pantalla en el navegador de este entorno (la animación no corre si la
+pestaña no está "compositando" frames). Para probar interacciones dentro de
+esos modales hubo que cambiar `animationType` a `"none"` temporalmente y
+revertirlo después — no es un bug de la app, es una limitación del entorno
+de pruebas.
 
 ## Dónde está cada cosa
 
 ```
 src/
   app/            pantallas y layouts (expo-router, file-based routing)
-  components/     MovimientoForm, MonthYearPicker, ui/ (Button, TextField,
-                  SelectField, PillSelector, Banner)
-  constants/      theme.ts (paleta/spacing), opciones.ts (tipo/medio de pago)
+  components/     MovimientoForm, MonthYearPicker, ColorSwatchPicker,
+                  CategoriaFormModal, ui/ (Button, TextField, SelectField,
+                  PillSelector, Banner)
+  constants/      theme.ts (paleta/spacing), opciones.ts (tipo/medio de pago),
+                  categoriaColores.ts (paleta para el ABM, ver Fase 5)
   contexts/       AuthContext, CategoriasContext, DashboardPeriodContext
-  lib/            format.ts (moneda/fecha), metrics.ts (agregaciones puras)
+  lib/            format.ts (moneda/fecha), metrics.ts (agregaciones puras),
+                  csv.ts (arma el string CSV, sin tocar filesystem)
   services/       ÚNICO lugar que llama a supabase.ts directamente
+                  (incluye exportarCsv.ts, que sí toca filesystem/sharing)
   types/          database.ts — tipos de las tablas (deben ser `type`, ver arriba)
 supabase/
   migrations/     SQL para correr a mano en el SQL Editor

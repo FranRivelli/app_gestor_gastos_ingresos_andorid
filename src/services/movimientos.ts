@@ -1,12 +1,5 @@
-import { supabase } from './supabase';
+import { getUserId, supabase } from './supabase';
 import type { Movimiento, MovimientoConCategoria, TipoMovimiento } from '@/types/database';
-
-async function getUserId(): Promise<string> {
-  const { data } = await supabase.auth.getSession();
-  const userId = data.session?.user.id;
-  if (!userId) throw new Error('No hay sesión activa.');
-  return userId;
-}
 
 function rangoMes(anio: number, mes: number): { desde: string; hasta: string } {
   const desde = `${anio}-${String(mes).padStart(2, '0')}-01`;
@@ -54,6 +47,15 @@ export async function fetchMovimientosRango(desde: string, hasta: string): Promi
     .lte('fecha', hasta);
   if (error) throw error;
   return data;
+}
+
+export async function fetchTodosMovimientos(): Promise<MovimientoConCategoria[]> {
+  const { data, error } = await supabase
+    .from('movimientos')
+    .select('*, categoria:categorias(nombre, color, tipo)')
+    .order('fecha', { ascending: true });
+  if (error) throw error;
+  return data as unknown as MovimientoConCategoria[];
 }
 
 export async function fetchMovimiento(id: string): Promise<Movimiento> {

@@ -22,8 +22,15 @@ para estado, `react-native-gifted-charts` para gráficos, `date-fns` para fechas
   4 tarjetas de métricas, torta de gastos por categoría con leyenda y
   porcentajes, barras horizontales de top categorías, y barras de ingresos vs.
   gastos de los últimos 6 meses.
-- Fase 5 en adelante: presupuesto por categoría, ABM de categorías y exportar
-  CSV — todavía no están. Presupuesto hoy es un placeholder temporal.
+- **Fase 5 (lista):** pantalla Presupuesto (definir monto por categoría y mes,
+  barra de progreso verde/amarillo/rojo, copiar presupuesto del mes anterior);
+  Ajustes real (ABM de categorías con selector de color, no deja borrar una
+  categoría con movimientos —ofrece desactivarla—, exportar movimientos a
+  CSV con expo-sharing, cerrar sesión).
+
+Con esto están las 5 fases del pedido original. Lo que queda es pulido y
+verificación en dispositivo de las partes que no se pueden probar por
+navegador (ver sección de abajo y `CLAUDE.md`).
 
 ## Requisitos previos
 
