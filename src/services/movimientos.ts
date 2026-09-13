@@ -49,6 +49,16 @@ export async function fetchMovimientosRango(desde: string, hasta: string): Promi
   return data;
 }
 
+// Para el selector de mes/año: el año más viejo con movimientos cargados,
+// así el selector no ofrece años vacíos hacia atrás sin sentido. null si
+// todavía no hay ningún movimiento.
+export async function fetchAnioMovimientoMasAntiguo(): Promise<number | null> {
+  const { data, error } = await supabase.from('movimientos').select('fecha').order('fecha', { ascending: true }).limit(1);
+  if (error) throw error;
+  if (!data || data.length === 0) return null;
+  return Number(data[0].fecha.slice(0, 4));
+}
+
 export async function fetchTodosMovimientos(): Promise<MovimientoConCategoria[]> {
   const { data, error } = await supabase
     .from('movimientos')
@@ -64,7 +74,14 @@ export async function fetchMovimiento(id: string): Promise<Movimiento> {
   return data;
 }
 
-export type NuevoMovimiento = Omit<Movimiento, 'id' | 'user_id' | 'created_at'>;
+export type NuevoMovimiento = Omit<
+  Movimiento,
+  'id' | 'user_id' | 'created_at' | 'id_externo' | 'lote_importacion_id' | 'fecha_importacion'
+> & {
+  id_externo?: string | null;
+  lote_importacion_id?: string | null;
+  fecha_importacion?: string | null;
+};
 
 export async function crearMovimiento(input: NuevoMovimiento): Promise<Movimiento> {
   const user_id = await getUserId();
@@ -83,7 +100,29 @@ export async function actualizarMovimiento(id: string, cambios: Partial<NuevoMov
   return data;
 }
 
-export async function eliminarMovimiento(id: string): Promise<void> {
-  const { error } = await supabase.from('movimientos').delete().eq('id', id);
+export async function eliminarMovimientos(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  const { error } = await supabase.from('movimientos').delete().in('id', ids);
   if (error) throw error;
+}
+
+export interface InfoLoteImportacion {
+  ids: string[];
+  fechaImportacion: string | null;
+}
+
+// Busca todos los movimientos de una misma importación (mismo
+// lote_importacion_id), sin importar el mes: si el PDF cruza dos meses, el
+// filtro de mes activo en Movimientos no debe impedir deshacer la
+// importación completa.
+export async function fetchLoteImportacion(loteImportacionId: string): Promise<InfoLoteImportacion> {
+  const { data, error } = await supabase
+    .from('movimientos')
+    .select('id, fecha_importacion')
+    .eq('lote_importacion_id', loteImportacionId);
+  if (error) throw error;
+  return {
+    ids: data.map((d) => d.id),
+    fechaImportacion: data[0]?.fecha_importacion ?? null,
+  };
 }

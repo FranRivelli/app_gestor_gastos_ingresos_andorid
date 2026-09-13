@@ -1,6 +1,6 @@
 export type TipoMovimiento = 'ingreso' | 'gasto';
 export type NaturalezaCategoria = 'fijo' | 'variable';
-export type MedioPago = 'efectivo' | 'débito' | 'crédito' | 'transferencia';
+export type MedioPago = 'efectivo' | 'débito' | 'crédito' | 'transferencia' | 'QR';
 
 export type Categoria = {
   id: string;
@@ -23,6 +23,9 @@ export type Movimiento = {
   descripcion: string | null;
   medio_pago: MedioPago;
   created_at: string;
+  id_externo: string | null;
+  lote_importacion_id: string | null;
+  fecha_importacion: string | null;
 };
 
 export type MovimientoConCategoria = Movimiento & {
@@ -36,6 +39,14 @@ export type Presupuesto = {
   anio: number;
   mes: number;
   monto_presupuestado: number;
+};
+
+export type ReglaCategorizacion = {
+  id: string;
+  user_id: string;
+  patron: string;
+  categoria_id: string;
+  created_at: string;
 };
 
 export type Database = {
@@ -53,9 +64,12 @@ export type Database = {
       };
       movimientos: {
         Row: Movimiento;
-        Insert: Omit<Movimiento, 'id' | 'created_at'> & {
+        Insert: Omit<Movimiento, 'id' | 'created_at' | 'id_externo' | 'lote_importacion_id' | 'fecha_importacion'> & {
           id?: string;
           created_at?: string;
+          id_externo?: string | null;
+          lote_importacion_id?: string | null;
+          fecha_importacion?: string | null;
         };
         Update: Partial<Omit<Movimiento, 'id' | 'user_id'>>;
         Relationships: [
@@ -82,8 +96,30 @@ export type Database = {
           },
         ];
       };
+      reglas_categorizacion: {
+        Row: ReglaCategorizacion;
+        Insert: Omit<ReglaCategorizacion, 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Omit<ReglaCategorizacion, 'id' | 'user_id'>>;
+        Relationships: [
+          {
+            foreignKeyName: 'reglas_categorizacion_categoria_id_fkey';
+            columns: ['categoria_id'];
+            isOneToOne: false;
+            referencedRelation: 'categorias';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      resetear_cuenta: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+    };
   };
 };

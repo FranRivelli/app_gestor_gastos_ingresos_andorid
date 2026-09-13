@@ -10,4 +10,5 @@ export const OPCIONES_MEDIO_PAGO: { value: MedioPago; label: string }[] = [
   { value: 'débito', label: 'Débito' },
   { value: 'crédito', label: 'Crédito' },
   { value: 'transferencia', label: 'Transferencia' },
+  { value: 'QR', label: 'QR' },
 ];

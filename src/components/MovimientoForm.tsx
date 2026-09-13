@@ -2,8 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
-import { useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -49,7 +48,6 @@ interface MovimientoFormProps {
   onGuardar: (datos: DatosMovimientoForm) => Promise<void>;
   etiquetaBoton: string;
   limpiarAlGuardar?: boolean;
-  autoFocusMonto?: boolean;
 }
 
 export function MovimientoForm({
@@ -58,7 +56,6 @@ export function MovimientoForm({
   onGuardar,
   etiquetaBoton,
   limpiarAlGuardar = false,
-  autoFocusMonto = false,
 }: MovimientoFormProps) {
   const [tipo, setTipo] = useState<TipoMovimiento>(valoresIniciales?.tipo ?? 'gasto');
   const [categoriaId, setCategoriaId] = useState<string | null>(valoresIniciales?.categoriaId ?? null);
@@ -72,14 +69,6 @@ export function MovimientoForm({
   const [error, setError] = useState<string | null>(null);
   const [confirmacion, setConfirmacion] = useState(false);
   const montoRef = useRef<TextInput>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!autoFocusMonto) return;
-      const timer = setTimeout(() => montoRef.current?.focus(), 150);
-      return () => clearTimeout(timer);
-    }, [])
-  );
 
   const categoriasFiltradas = categorias.filter((c) => c.tipo === tipo && c.activa);
   const opcionesCategoria = categoriasFiltradas.map((c) => ({ value: c.id, label: c.nombre, color: c.color }));

@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoriaFormModal } from '@/components/CategoriaFormModal';
+import { ResetearCuentaModal } from '@/components/ResetearCuentaModal';
 import { Banner } from '@/components/ui/Banner';
 import { Button } from '@/components/ui/Button';
 import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
@@ -20,7 +21,9 @@ export default function AjustesScreen() {
   const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null);
   const [exportando, setExportando] = useState(false);
   const [cerrandoSesion, setCerrandoSesion] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
   const categoriasGasto = useMemo(() => categorias.filter((c) => c.tipo === 'gasto'), [categorias]);
   const categoriasIngreso = useMemo(() => categorias.filter((c) => c.tipo === 'ingreso'), [categorias]);
@@ -58,12 +61,18 @@ export default function AjustesScreen() {
     }
   }
 
+  function handleReseteado() {
+    refetch();
+    setMensajeExito('Tu cuenta se reseteó. Las categorías volvieron a las 23 por defecto.');
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.email}>{session?.user.email}</Text>
 
         {error ? <Banner message={error} /> : null}
+        {mensajeExito ? <Banner message={mensajeExito} variant="success" /> : null}
 
         <View style={styles.seccion}>
           <View style={styles.seccionHeader}>
@@ -86,6 +95,17 @@ export default function AjustesScreen() {
         <View style={styles.seccion}>
           <Button title="Cerrar sesión" variant="secondary" onPress={handleSignOut} loading={cerrandoSesion} />
         </View>
+
+        <View style={styles.zonaPeligro}>
+          <Text style={styles.zonaPeligroTitulo}>Zona de peligro</Text>
+          <Text style={styles.zonaPeligroDescripcion}>
+            Borra todos tus movimientos, presupuestos y reglas de categorización, y restaura las categorías a las
+            23 por defecto. No se puede deshacer.
+          </Text>
+          <Pressable style={styles.botonResetear} onPress={() => setResetModalVisible(true)}>
+            <Text style={styles.botonResetearTexto}>Resetear cuenta</Text>
+          </Pressable>
+        </View>
       </ScrollView>
 
       <CategoriaFormModal
@@ -93,6 +113,12 @@ export default function AjustesScreen() {
         categoria={categoriaEditando}
         onClose={() => setModalVisible(false)}
         onGuardado={refetch}
+      />
+
+      <ResetearCuentaModal
+        visible={resetModalVisible}
+        onClose={() => setResetModalVisible(false)}
+        onReseteado={handleReseteado}
       />
     </SafeAreaView>
   );
@@ -201,5 +227,33 @@ const styles = StyleSheet.create({
   },
   textoInactivo: {
     color: Colors.textSecondary,
+  },
+  zonaPeligro: {
+    marginTop: Spacing.md,
+    paddingTop: Spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: Colors.expense,
+    gap: Spacing.sm,
+  },
+  zonaPeligroTitulo: {
+    color: Colors.expense,
+    fontSize: FontSize.md,
+    fontWeight: '700',
+  },
+  zonaPeligroDescripcion: {
+    color: Colors.textSecondary,
+    fontSize: FontSize.sm,
+  },
+  botonResetear: {
+    borderWidth: 1,
+    borderColor: Colors.expense,
+    borderRadius: Radius.md,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+  },
+  botonResetearTexto: {
+    color: Colors.expense,
+    fontSize: FontSize.md,
+    fontWeight: '600',
   },
 });

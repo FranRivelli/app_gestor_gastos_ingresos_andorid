@@ -30,6 +30,9 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# Windows
+Thumbs.db
+
 # local env files
 .env
 .env*.local
@@ -40,3 +43,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# scratch / datos financieros reales
+/tmp
+
+# apuntes de facultad, sin relación con el proyecto
+/parcial3_estructura_base.md
+/permitido.md
+/repaso-parcial.md

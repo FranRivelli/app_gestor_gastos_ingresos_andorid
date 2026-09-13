@@ -165,6 +165,17 @@ este entorno), y commit propio.
   nombre o columnas, este `onConflict` string hay que actualizarlo a mano
   (Supabase no lo valida en tipos).
 
+### Fase 6 — importación de Mercado Pago
+
+- **`MovimientoForm` no hace auto-focus en el campo Monto.** Se probó
+  (`autoFocusMonto`, con `useFocusEffect` sobre el `TextInput` de Monto) y se
+  sacó por pedido explícito: abrir el teclado solo al entrar a la pestaña
+  Cargar molesta más de lo que ayuda. Esto ya se había pedido así en la
+  Fase 3 originalmente; quedó documentado acá para que no se reintroduzca.
+  Si se quiere foco automático en algún flujo puntual (por ejemplo, después
+  de guardar un movimiento con `limpiarAlGuardar`), hacerlo ahí mismo con el
+  `ref` existente (`montoRef`), no como comportamiento por defecto del form.
+
 ## Cosas que no se pudieron probar en este entorno
 
 Sin dispositivo físico ni emulador, todo se probó vía `npx expo start` +

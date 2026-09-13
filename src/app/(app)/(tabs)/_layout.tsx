@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs, useRouter } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
 
+import { AjustesHeaderButton } from '@/components/AjustesHeaderButton';
 import { MonthYearPicker } from '@/components/MonthYearPicker';
 import { Colors } from '@/constants/theme';
-import { DashboardPeriodProvider, useDashboardPeriod } from '@/contexts/DashboardPeriodContext';
+import { useDashboardPeriod } from '@/contexts/DashboardPeriodContext';
 
 function InicioHeaderTitle() {
   const { anio, mes, setPeriodo } = useDashboardPeriod();
@@ -12,19 +12,13 @@ function InicioHeaderTitle() {
 }
 
 function TabsNavigator() {
-  const router = useRouter();
-
   return (
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: Colors.surface },
         headerTintColor: Colors.text,
         headerShadowVisible: false,
-        headerRight: () => (
-          <Pressable onPress={() => router.push('/ajustes')} hitSlop={12} style={{ marginRight: 16 }}>
-            <Ionicons name="settings-outline" size={22} color={Colors.text} />
-          </Pressable>
-        ),
+        headerRight: () => <AjustesHeaderButton />,
         tabBarStyle: { backgroundColor: Colors.surface, borderTopColor: Colors.border },
         tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.textSecondary,
@@ -64,9 +58,5 @@ function TabsNavigator() {
 }
 
 export default function TabsLayout() {
-  return (
-    <DashboardPeriodProvider>
-      <TabsNavigator />
-    </DashboardPeriodProvider>
-  );
+  return <TabsNavigator />;
 }

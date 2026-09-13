@@ -1,4 +1,4 @@
-import type { MovimientoConCategoria } from '@/types/database';
+import type { MedioPago, MovimientoConCategoria } from '@/types/database';
 import type { MovimientoResumen } from '@/services/movimientos';
 
 export interface ResumenCategoria {
@@ -65,6 +65,25 @@ export function calcularResumenMes(movimientos: MovimientoConCategoria[]): Resum
     tasaAhorro: ingresos > 0 ? (ahorro / ingresos) * 100 : 0,
     gastosPorCategoria,
   };
+}
+
+export interface ResumenMedioPago {
+  medioPago: MedioPago;
+  monto: number;
+  porcentaje: number;
+}
+
+export function calcularGastoPorMedioPago(movimientos: MovimientoConCategoria[]): ResumenMedioPago[] {
+  const totales = new Map<MedioPago, number>();
+  let total = 0;
+  for (const mov of movimientos) {
+    if (mov.tipo !== 'gasto') continue;
+    totales.set(mov.medio_pago, (totales.get(mov.medio_pago) ?? 0) + mov.monto);
+    total += mov.monto;
+  }
+  return Array.from(totales.entries())
+    .map(([medioPago, monto]) => ({ medioPago, monto, porcentaje: total > 0 ? (monto / total) * 100 : 0 }))
+    .sort((a, b) => b.monto - a.monto);
 }
 
 export interface PeriodoMes {
