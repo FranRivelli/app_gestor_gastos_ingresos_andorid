@@ -45,6 +45,14 @@ la computadora.
 
 ## Capturas
 
+<img width="1080" height="3302" alt="image" src="https://github.com/user-attachments/assets/16875be3-d387-4886-8867-c141e3ee8e87" />
+<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/d3771c2e-1e3a-4e3e-85cf-70761d406735" />
+<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/9c9154f1-3eb9-45c1-aef0-625ca45eb1a8" />
+<img width="1080" height="3677" alt="image" src="https://github.com/user-attachments/assets/31a3759a-a899-49f0-8e1e-9def8ae16550" />
+<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/5137c039-76e9-46fc-850f-4a44a8bdd23d" />
+<img width="1080" height="4733" alt="image" src="https://github.com/user-attachments/assets/4958fff2-f81e-42be-ac0b-e9ffd0b5ea1e" />
+
+
 <!-- Pegar acá las capturas de pantalla (dashboard, cargar movimiento, presupuesto, etc.) -->
 
 ## Qué aprendí / Qué le falta
